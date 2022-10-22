@@ -63,6 +63,12 @@ let AppSchema = {
 # settings | doc "Settings for checks on the values"
 # | SettingsSchema
 } in
-let conf | AppSchema = import "conf.ncl" in
-
-conf
+# # # # # # # # let conf | AppSchema = import "conf.ncl" in
+ #let packages | Array AppSchema = [ conf ] in
+# packages
+# conf
+# let cinf = import "conf.ncl" in
+#let types = { AppSchema } in
+#types
+# let cinf = "hello"
+AppSchema
