@@ -1,0 +1,266 @@
+diff --git a/.envrc b/.envrc
+new file mode 100644
+index 0000000..3550a30
+--- /dev/null
++++ b/.envrc
+@@ -0,0 +1 @@
++use flake
+diff --git a/.gitignore b/.gitignore
+index 3742ea3..c7d7d1a 100755
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,2 +1,3 @@
+ /target
+ /glibc-2.34
++.direnv
+diff --git a/flake.lock b/flake.lock
+new file mode 100644
+index 0000000..c4658c0
+--- /dev/null
++++ b/flake.lock
+@@ -0,0 +1,128 @@
++{
++  "nodes": {
++    "crate2nix": {
++      "flake": false,
++      "locked": {
++        "lastModified": 1665969003,
++        "narHash": "sha256-V0M8BftbcmrfVGIsIWwulXbcL/vdMnvpwf+vtm/G5jM=",
++        "owner": "kolloch",
++        "repo": "crate2nix",
++        "rev": "1714a22138aa27e9577a4a3723527113e80a24ca",
++        "type": "github"
++      },
++      "original": {
++        "owner": "kolloch",
++        "repo": "crate2nix",
++        "type": "github"
++      }
++    },
++    "flake-compat": {
++      "flake": false,
++      "locked": {
++        "lastModified": 1650374568,
++        "narHash": "sha256-Z+s0J8/r907g149rllvwhb4pKi8Wam5ij0st8PwAh+E=",
++        "owner": "edolstra",
++        "repo": "flake-compat",
++        "rev": "b4a34015c698c7793d592d66adbab377907a2be8",
++        "type": "github"
++      },
++      "original": {
++        "owner": "edolstra",
++        "repo": "flake-compat",
++        "type": "github"
++      }
++    },
++    "flake-utils": {
++      "locked": {
++        "lastModified": 1659877975,
++        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
++        "owner": "numtide",
++        "repo": "flake-utils",
++        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
++        "type": "github"
++      },
++      "original": {
++        "owner": "numtide",
++        "repo": "flake-utils",
++        "type": "github"
++      }
++    },
++    "nixpkgs": {
++      "locked": {
++        "lastModified": 1666377499,
++        "narHash": "sha256-dZZCGvWcxc7oGnUgFVf0UeNHsJ4VhkTM0v5JRe8EwR8=",
++        "owner": "nixos",
++        "repo": "nixpkgs",
++        "rev": "301aada7a64812853f2e2634a530ef5d34505048",
++        "type": "github"
++      },
++      "original": {
++        "owner": "nixos",
++        "ref": "nixos-unstable",
++        "repo": "nixpkgs",
++        "type": "github"
++      }
++    },
++    "nixpkgs_2": {
++      "locked": {
++        "lastModified": 1665296151,
++        "narHash": "sha256-uOB0oxqxN9K7XGF1hcnY+PQnlQJ+3bP2vCn/+Ru/bbc=",
++        "owner": "NixOS",
++        "repo": "nixpkgs",
++        "rev": "14ccaaedd95a488dd7ae142757884d8e125b3363",
++        "type": "github"
++      },
++      "original": {
++        "owner": "NixOS",
++        "ref": "nixpkgs-unstable",
++        "repo": "nixpkgs",
++        "type": "github"
++      }
++    },
++    "root": {
++      "inputs": {
++        "crate2nix": "crate2nix",
++        "flake-compat": "flake-compat",
++        "nixpkgs": "nixpkgs",
++        "rust-overlay": "rust-overlay",
++        "utils": "utils"
++      }
++    },
++    "rust-overlay": {
++      "inputs": {
++        "flake-utils": "flake-utils",
++        "nixpkgs": "nixpkgs_2"
++      },
++      "locked": {
++        "lastModified": 1666494036,
++        "narHash": "sha256-4mmm+1MBPMD56LMLN9QcEwnfnu41NkA6lDeZGjSrxIw=",
++        "owner": "oxalica",
++        "repo": "rust-overlay",
++        "rev": "af2e939ba2c7cbb188d06d6650c6353b10b3f2be",
++        "type": "github"
++      },
++      "original": {
++        "owner": "oxalica",
++        "repo": "rust-overlay",
++        "type": "github"
++      }
++    },
++    "utils": {
++      "locked": {
++        "lastModified": 1659877975,
++        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
++        "owner": "numtide",
++        "repo": "flake-utils",
++        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
++        "type": "github"
++      },
++      "original": {
++        "owner": "numtide",
++        "repo": "flake-utils",
++        "type": "github"
++      }
++    }
++  },
++  "root": "root",
++  "version": 7
++}
+diff --git a/flake.nix b/flake.nix
+new file mode 100644
+index 0000000..a75a223
+--- /dev/null
++++ b/flake.nix
+@@ -0,0 +1,92 @@
++# This file is pretty general, and you can adapt it in your project replacing
++# only `name` and `description` below.
++
++{
++  description = "...";
++
++  inputs = {
++    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
++    utils.url = "github:numtide/flake-utils";
++    rust-overlay.url = "github:oxalica/rust-overlay";
++    crate2nix = {
++      url = "github:kolloch/crate2nix";
++      flake = false;
++    };
++    flake-compat = {
++      url = "github:edolstra/flake-compat";
++      flake = false;
++    };
++  };
++
++  outputs = { self, nixpkgs, utils, rust-overlay, crate2nix, ... }:
++    let
++      name = "welcome";
++    in
++    utils.lib.eachDefaultSystem
++      (system:
++        let
++          # Imports
++          pkgs = import nixpkgs {
++            inherit system;
++            overlays = [
++              rust-overlay.overlays.default
++              (self: super: {
++                # Because rust-overlay bundles multiple rust packages into one
++                # derivation, specify that mega-bundle here, so that crate2nix
++                # will use them automatically.
++                rustc = self.rust-bin.stable.latest.default;
++                cargo = self.rust-bin.stable.latest.default;
++              })
++            ];
++          };
++          inherit (import "${crate2nix}/tools.nix" { inherit pkgs; })
++            generatedCargoNix;
++
++          # Create the cargo2nix project
++          project = pkgs.callPackage
++            (generatedCargoNix {
++              inherit name;
++              src = ./.;
++            })
++            {
++              # Individual crate overrides go here
++              # Example: https://github.com/balsoft/simple-osd-daemons/blob/6f85144934c0c1382c7a4d3a2bbb80106776e270/flake.nix#L28-L50
++              defaultCrateOverrides = pkgs.defaultCrateOverrides // {
++                # The app crate itself is overriden here. Typically we
++                # configure non-Rust dependencies (see below) here.
++                ${name} = oldAttrs: {
++                  inherit buildInputs nativeBuildInputs;
++                } // buildEnvVars;
++              };
++            };
++
++          # Configuration for the non-Rust dependencies
++          buildInputs = with pkgs; [ glibc openssl ];
++          nativeBuildInputs = with pkgs; [ rustc cargo pkgconfig nixpkgs-fmt ];
++          buildEnvVars = {
++            PKG_CONFIG_PATH = ''${pkgs.openssl}/lib/pkgconfig 
++            '';
++          };
++        in
++        rec {
++          packages.${name} = project.rootCrate.build;
++
++          # `nix build`
++          defaultPackage = packages.${name};
++
++          # `nix run`
++          apps.${name} = utils.lib.mkApp {
++            inherit name;
++            drv = packages.${name};
++          };
++          defaultApp = apps.${name};
++
++          # `nix develop`
++          devShell = pkgs.mkShell
++            {
++              inherit buildInputs nativeBuildInputs;
++              RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
++            } // buildEnvVars;
++        }
++      );
++}
+diff --git a/shell.nix b/shell.nix
+new file mode 100644
+index 0000000..9eb132a
+--- /dev/null
++++ b/shell.nix
+@@ -0,0 +1,13 @@
++(import
++  (
++    let
++      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
++    in
++    fetchTarball {
++      url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
++      sha256 = lock.nodes.flake-compat.locked.narHash;
++    }
++  )
++  {
++    src = ./.;
++  }).shellNix
