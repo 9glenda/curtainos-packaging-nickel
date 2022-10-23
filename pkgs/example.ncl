@@ -12,6 +12,3 @@ let example | (import "../pkg.ncl")  = {
     build = [ "example", "world" ],
   },
 } in example
-# let packages = import "packages.ncl" in
-# let packages = [] @ [ example ] in packages
-# let packages = { example = helloPKG } in packages
